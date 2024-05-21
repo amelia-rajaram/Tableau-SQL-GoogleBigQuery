@@ -20,7 +20,8 @@ The raw data used for this analysis is available publicly on Google BigQuery.
   - Grouped Source
   - Medium
   - total_customers
-  - total_revenue	total_transactions
+  - total_revenue
+  - total_transactions
   - total_pageviews
   - avg_session_duration
   - total_bounces
