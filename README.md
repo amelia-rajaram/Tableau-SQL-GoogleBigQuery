@@ -2,7 +2,7 @@
 
 ## Project 1: Google Merchandise Store Analytics (August 2016 - August 2017)
 
-[View Marketing Campaign Dashboard on Tableau Public]((https://public.tableau.com/app/profile/amelia.rajaram/viz/GoogleMerchandise_17163209527990/Dashboard2))
+[View Marketing Campaign Dashboard on Tableau Public]([https://public.tableau.com/app/profile/amelia.rajaram/viz/GoogleMerchandise_17163209527990/Dashboard2)])
 
 ### Raw Data
 
