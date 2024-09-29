@@ -1,0 +1,50 @@
+WITH sessions_data AS (
+  SELECT
+    fullVisitorId,
+    visitId,
+    date,
+    IFNULL(totals.transactions, 0) AS total_transactions,
+    IFNULL(totals.transactionRevenue / 1e6, 0) AS total_revenue,  -- currency unit
+    IFNULL(totals.pageviews, 0) AS pageviews,
+    IFNULL(totals.timeOnSite, 0) AS avg_session_duration,
+    IFNULL(totals.bounces, 0) AS bounces,
+    trafficSource.source,
+    trafficSource.medium
+  FROM
+    `bigquery-public-data.google_analytics_sample.ga_sessions_*`
+  WHERE
+    _TABLE_SUFFIX BETWEEN '20160801' AND '20170801'  -- date range 
+)
+
+SELECT
+  CASE
+    WHEN source IN ('l.facebook.com', 'm.facebook.com') THEN 'facebook.com'
+    ELSE source
+  END AS grouped_source,
+  medium,
+  COUNT(DISTINCT fullVisitorId) AS total_customers,
+  COUNT(visitId) AS total_sessions,
+  SUM(total_revenue) AS total_revenue,
+  SUM(total_transactions) AS total_transactions,
+  SUM(pageviews) AS total_pageviews,
+  AVG(avg_session_duration) AS avg_session_duration,
+  SUM(bounces) AS total_bounces,
+  -- bounce rate percentage
+  (SUM(bounces) / NULLIF(COUNT(visitId), 0)) * 100 AS bounce_rate_percentage,
+  -- cost per session for CAC 
+  COUNT(visitId) * 10 AS total_cost,
+  -- ROI
+  (SUM(total_revenue) - COUNT(visitId) * 10) / NULLIF(COUNT(visitId) * 10, 0) AS ROI,
+  -- CAC
+  COUNT(visitId) * 10 / NULLIF(COUNT(DISTINCT fullVisitorId), 0) AS CAC,
+  -- conversion rate
+  (SUM(total_transactions) / NULLIF(COUNT(visitId), 0)) * 100 AS conversion_rate
+FROM
+  sessions_data
+WHERE
+  (total_revenue > 0 OR total_transactions > 0 OR pageviews > 0 OR avg_session_duration > 0 OR bounces > 0)
+GROUP BY
+  grouped_source, medium
+ORDER BY
+  total_sessions DESC
+LIMIT 2000;
